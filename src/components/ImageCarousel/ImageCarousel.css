@@ -1,0 +1,62 @@
+
+.carousel img {
+    position: absolute;
+    box-sizing: content-box;
+    width: 100%;
+    max-height: 400px;
+    /* margin-bottom: 20px; */
+    margin: 0;
+}
+
+
+
+
+
+.photo-num p {
+    margin: 0;
+    padding: 0;
+    /* border: 1px solid black; */
+    text-align: center;
+    color: rgb(208, 62, 62);
+    font-size: 12px;
+    z-index: 1000;
+    
+}
+
+.button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%); 
+    font-size: 2.5em; 
+    height: 100%;
+    background: none; 
+    border: none;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease-in-out,
+                color 0.3s ease-in-out;
+    cursor: pointer; 
+    color: rgba(251, 251, 251, 0.6);
+    font-weight: 100;
+    padding: 5px;
+   
+}
+
+.button.right {
+    position: absolute;
+    right: 0;
+}
+
+.button:hover {
+    color: rgba(251, 251, 251, 1);
+    background-color: rgba(251, 251, 251, 0.3);
+    transition: background-color 0.3s ease-in-out,
+                color 0.3s ease-in-out;
+}
+
+.button:active {
+    color: rgba(251, 251, 251, 0.552);
+    transition: color 0s ease-in-out;
+
+}
+
+  

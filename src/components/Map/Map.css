@@ -1,0 +1,14 @@
+.property-map {
+    height: inherit;
+    width: 100%;
+    border-radius: 10px;
+  } 
+  
+.property-popup {
+  min-width: 25vw;
+  height: 400px;
+}
+
+.leaflet-container {
+  height: inherit;
+}

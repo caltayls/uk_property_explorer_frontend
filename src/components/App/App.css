@@ -1,0 +1,51 @@
+.searchBar-container {
+  margin-top: 30px;
+  /* height: 40vh;
+   */
+  max-height: 500px;
+  background-color: #ececec!important;
+  border-radius: 10px;
+}
+.map-table-container {
+  box-sizing: content-box;
+
+  display: flex;
+  margin: 0 auto;
+  padding: 0;
+  /* width: 60vw; */
+  /* align-items: center; */
+  justify-content:space-between;
+
+}
+
+.map-container {
+  display: flex;
+  margin: 20px 0 20px 0;
+  justify-content: center;
+  height: 70vh;
+  width: 47%;
+
+
+}
+
+.summary-table-container {
+  width: 47%;
+  background-color: #ececec!important;
+  z-index: 1;
+  margin: 20px 0 20px 0;
+  padding: 0 30px 0 30px;
+  border-radius: 10px;
+  /* border: 1px solid black; */
+
+}
+
+
+.loader {
+  color:#566060;
+}
+
+.leaflet-container {
+  width: 100wh; 
+  height: 100vh;
+}
+
