@@ -3,31 +3,36 @@ import './Table.css';
 
 
 export default function Table(props) {
-    const { jsonSummary, price } = props;
-    const [tableData, setTableData] = useState(jsonSummary);
+    const { summaryData , price, searchType } = props;
+    const [tableData, setTableData] = useState(summaryData);
     const [sortOrder, setSortOrder] = useState('asc');
     
-    const[columnObj, setIsRotated] = useState( {
-        city: false,
-        bedrooms: false,
-        bathrooms: false,
-        propertySubType: false,
-        listingUpdateReason: false
-    });
-
-
-    const columnStrings = {
+    let columnStrings;
+    if (searchType === 'price') {
+        columnStrings = {
         city: 'City',
         bedrooms: 'Bedrooms',
         bathrooms: 'Bathrooms',
         propertySubType: 'Property Type',
         listingUpdateReason: 'Reason for listing'
-    };
+        }
+    } else {
+        columnStrings = {
+            city: 'City',
+            mean: 'Mean',
+            std: 'Standard Deviation',
+            min: 'Minimum',
+            '25%': '25%',
+            '50%': '50%',
+            '75%': '75%',
+            max: 'Maximum',
+        }
+    }
 
-   
+
 
     const tableSort = (column) => {
-      
+
         const sortedData = [...tableData].sort((a, b) => {
           if (a[column] < b[column]) {
             return sortOrder === 'asc' ? -1 : 1;
@@ -42,15 +47,12 @@ export default function Table(props) {
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
       };
 
-
-      const handleSort = ({ target }) => {
+    const handleSort = ({ target }) => {
         const { className } = target;
         tableSort(className);
       };
  
  
-
-
 
     return (
         <>
@@ -72,16 +74,22 @@ export default function Table(props) {
                 </tr>
             </thead>
             <tbody className="summary-body">
+                
                 {tableData.map(row => (
                     <tr key={row.city}>
-                        <td className='city'>{row.city}</td>
-                        <td>{row.bedrooms}</td>
-                        <td>{row.bathrooms}</td>
-                        <td>{row.propertySubType}</td>
-                        <td>{row.listingUpdateReason}</td>
+                        {Object.entries(row).map(entry => {
+                            {if (searchType === 'features') {
+                                return <td className={entry[0]}>{entry[1].toLocaleString()}</td> 
+                         } else {
+                            return <td className={entry[0]}>{entry[1]}</td>
+                            }}
+                        })}
                     </tr>
-                    )
-                )}
+
+                       
+                        ))}
+                    
+                
             </tbody>
         </table>
         </>

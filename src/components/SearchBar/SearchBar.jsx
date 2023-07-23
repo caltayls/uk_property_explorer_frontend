@@ -2,7 +2,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import './SearchBar.css'
 import { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+import regionAndDist from '../../assets/geo_data/subdivision_names/regions-districts.json';
+
+
 
 export default function SearchBar(props) {
     const [searchByPrice, setSearchByPrice] = useState(true);
@@ -27,12 +29,16 @@ export default function SearchBar(props) {
             string: 'Retirement Home'
         },
     });
+    const [subdivisionType, setSubdivisionType] = useState('');
+    const [region, setRegion] = useState('');
+    console.log(region)
 
- 
+    const subdivisionTypeChoices = ['Cities across regions', 'Districts of a region'];
+    const regionNames = Object.keys(regionAndDist);
 
-    const handlePriceChange = (event) => {
-        let formattedPrice = props.priceFormatter(event.target.value.replace(/,/g, ''));
-        formattedPrice = formattedPrice.replace(/\B(?=(\d{3})+)/g, ',').replace(/£/g, '');
+    const handlePriceChange = ({target}) => {
+       
+        let formattedPrice = target.value;//.replace(/\B(?=(\d{3})+)/g, ',');
         setSearchPrice(formattedPrice);
       };
 
@@ -81,6 +87,8 @@ export default function SearchBar(props) {
             data.numOfBedrooms = numOfBedrooms; 
             data.propertyType = propertyType;
         }
+
+        data['region'] = region;
 
         props.setPostData(data);
     };
@@ -151,6 +159,40 @@ export default function SearchBar(props) {
                 
                 </>
                 }
+
+                <div className="subdivisionType">
+                    <label htmlFor='subdivision' >Subdivision Type</label>
+                    <select name='subdivision' onChange={({target}) => setSubdivisionType(target.value)}>
+                  
+                    {subdivisionTypeChoices.map(opt => (
+
+                        <option value={opt}>{opt}</option>
+                    ))}
+                    </select>
+                </div>
+
+                {subdivisionType === 'Districts of a region'
+                ? (                 
+                <div className="regionChoice">
+                <label htmlFor='regionChoice' >Region</label>
+                <select name='regionChoice' onChange={({target}) => setRegion(target.value)}>
+              
+                {regionNames.map(opt => (
+
+                    <option value={opt}>{opt}</option>
+                ))}
+                </select>
+            </div>)
+            : null
+                }
+
+
+
+
+
+
+
+
                 <div className="col-2">
                     <div className="multi-select include form-section">
                             <label>Must have:</label>

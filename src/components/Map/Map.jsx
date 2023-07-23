@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polygon, Tooltip} from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap} from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-cluster";
 import PropertyCard from '../PropertyCard/PropertyCard';
+import MapPolygons from '../MapPolygons/MapPolygons.jsx';
 import 'leaflet/dist/leaflet.css';
 import './Map.css';
-import geoJson from '../../../regions_longlat.json';
-
-
+import regionsJson from '../../assets/geojson_files/longlat/regions_longlat.json';
 
 export default function Map(props) {
-    const { mapData } = props;
+
+    const { mapData, region } = props;
     const [zoom, setZoom] = useState(6);
+    let regionJson, LONG, LAT;
+    if (region) {
+        regionJson = regionsJson['features'].find(reg => String(reg['properties']['RGN22NM']) === String(region));
+        LONG = regionJson['properties']['LONG'];
+        LAT = regionJson['properties']['LAT'];
+    }
+
 
     // returns a specified number of records to display on map
     const filterData = (array, numOfRecordsPerRegion) => {
         const filteredArray = [];
         const cityCount = {};
-
-        for (let i=0; i < array.length; i++) {
-            
-            const propRecord = array[i];  
+        array.forEach(propRecord => {
             const city = propRecord.city;
-  
             if (cityCount[city]) {
                 if (cityCount[city] < numOfRecordsPerRegion) {
                     filteredArray.push(propRecord);
@@ -30,11 +33,57 @@ export default function Map(props) {
             } else {
                 cityCount[city] = 1;
                 filteredArray.push(propRecord);
-            }
-        }
+            }   
+        })
         return filteredArray
-    };
-    // Finds the mid point of properties belonging to a specific region
+    }; 
+    const recordsForMap = filterData(mapData, 10);
+
+  
+    return (
+        <>
+        <MapContainer className='property-map' center= {region? [LAT, LONG]: [55,0]} zoom={zoom}>
+            <TileLayer
+        attribution={
+            '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          }
+          url={'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png'}
+            />
+            <MarkerClusterGroup
+                maxClusterRadius={20}
+            >
+                {mapData && recordsForMap.map(record => {
+                    const { location } = record;
+                    return (
+                    <Marker position={[location.latitude, location.longitude]}>
+                        <Popup 
+                            className='property-popup' 
+                            autoPanPadding={[100,40]}
+                        >                        
+                            <PropertyCard propertyRecord={record}/>
+                        </Popup>
+                    </Marker>
+                    )
+                })}
+            </MarkerClusterGroup>
+                <MapPolygons region={region}/>
+            </MapContainer>
+        </>
+    );
+};
+
+
+
+
+
+
+
+
+
+
+
+
+  // Finds the mid point of properties belonging to a specific region
     // const avgLocation = (recordsForMap) => {
     //     const avgLocation = {};
     //     const locations = {};
@@ -92,57 +141,11 @@ export default function Map(props) {
 
     // if (mapData) {
         // console.log(mapData);
-        const recordsForMap = filterData(mapData, 10);
-        console.log(recordsForMap);
+        
+
     //     console.log(recordsForMap);
     //     const regionAvgLocation = avgLocation(recordsForMap);
     //     const mapCenter = findMapCenter(regionAvgLocation);
     // // }
 
     
-    
-   
- 
-
-    return (
-        <>
-        <MapContainer className='property-map' center={mapData? [50,0]: [55,0]} zoom={zoom}>
-            <TileLayer
-        attribution={
-            '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          }
-          url={'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'}
-            />
-            <MarkerClusterGroup
-                maxClusterRadius={20}
-            >
-                {mapData && recordsForMap.map(record => {
-                    const { location } = record;
-                    return (
-                    <Marker position={[location.latitude, location.longitude]}>
-                        <Popup 
-                            className='property-popup' 
-                            autoPanPadding={[100,40]}
-                        >                        
-                            <PropertyCard propertyRecord={record}/>
-                        </Popup>
-                    </Marker>
-                    )
-                })}
-            </MarkerClusterGroup>
-            
-            {Object.keys(geoJson).map(key => {
-                const regionName = key;
-                // console.log(key)
-                const multiPoly = geoJson[key];
-                return (
-                    <Polygon pathOptions={{ color: 'purple' }} positions={multiPoly}>
-                        <Tooltip sticky>{regionName}</Tooltip>
-                    </Polygon>
-                )
-
-            })}
-            </MapContainer>
-        </>
-    );
-};
