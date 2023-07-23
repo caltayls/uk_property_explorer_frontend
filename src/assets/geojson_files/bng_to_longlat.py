@@ -1,12 +1,9 @@
 from pyproj import Transformer
 import numpy as np
 import json
-import os
-from functools import lru_cache
+
 
 # Convert ONS geojson files from BNG coordinate system to longlat.
-
-
 
 class CoordinateTransformer:
     def __init__(self):
@@ -21,11 +18,12 @@ class CoordinateTransformer:
     def convert_coords(self, geojson):
         for i, area in enumerate(geojson['features']):
             geometry_type = area['geometry']['type']
-            area_name = area['properties']['CTYUA23NM']
+            # area_name = area['properties']['CTYUA23NM']
+            # area_name = area['properties']['WD22NM']
+            # area_name = area['properties']['LAD23NM']
+            area_name = area['properties']['RGN22NM']
             area_coord_lists = area['geometry']['coordinates']
-            if area_name == 'Swansea':
-                print(area_name)
-            
+             
             longlat_coord_lists = []
             for lst in area_coord_lists:
                 if geometry_type == 'MultiPolygon':
@@ -47,30 +45,44 @@ class CoordinateTransformer:
 
         self.convert_coords(geojson_dict)
 
-        # with open(longlat_path, 'w') as f:
-        #     json.dump(geojson_dict, f)
+        with open(longlat_path, 'w') as f:
+            json.dump(geojson_dict, f)
 
 
 
 transformer = CoordinateTransformer()
 
 
-# Create longlat counties geojson
-county_bng_name = 'Counties_and_Unitary_Authorities_May_2023_UK_BGC_-8232673021969424694.json'
-county_longlat_name = 'counties.json'
-transformer.create_longlat_json(county_bng_name, county_longlat_name)
+# # Create longlat counties geojson
+# county_bng_name = 'Counties_and_Unitary_Authorities_May_2023_UK_BGC_-8232673021969424694.json'
+# county_longlat_name = 'counties.json'
+# transformer.create_longlat_json(county_bng_name, county_longlat_name)
 
 # Create longlat wards geojson
-ward_bng_name = 'Wards_December_2022_Boundaries_GB_BSC_-130606180342914343.json'
-ward_longlat_name = 'wards.json'
-transformer.create_longlat_json(ward_bng_name, ward_longlat_name)
+# ward_bng_name = 'Wards_December_2022_Boundaries_GB_BSC_-130606180342914343.json'
+# ward_longlat_name = 'wards_longlat.json'
+# transformer.create_longlat_json(ward_bng_name, ward_longlat_name)
+
+# # Districts
+# dst_bng_name = 'Local_Authority_Districts_May_2023_UK_BUC.json'
+# dst_longlat_name = 'districts_longlat.json'
+# transformer.create_longlat_json(dst_bng_name, dst_longlat_name )
+
+# Regionz
+reg_bng_name = 'Regions_coarse.json'
+reg_longlat_name = 'regions_longlat.json'
+transformer.create_longlat_json(reg_bng_name, reg_longlat_name )
 
 
+# with open('src/assets/geojson_files/bng/Wards_December_2022_Boundaries_GB_BSC_-130606180342914343.json', 'r') as f:
+#     geojson_dict = json.load(f)
 
+# districts = [ward['properties']['LAD22NM'] for ward in geojson_dict['features']]
 
-with open('src/assets/geojson_files/bng/Wards_December_2022_Boundaries_GB_BSC_-130606180342914343.json', 'r') as f:
-    geojson_dict = json.load(f)
-
-geojson_dict['features'][0]
+# unique_districts = [*set(districts)]
+# district_name_dict = {'names': unique_districts}
+# with open('src/assets/geojson_files/district_names.json', 'w') as f:
+#     json.dump(district_name_dict, f)
+# Ward data 
 # WD22NM - ward name
-# LAD22CD - district name
+# LAD22NM - district name
