@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import './SearchBar.css'
 import { useEffect, useState, useCallback } from 'react';
-import regionAndDist from '../../assets/geo_data/subdivision_names/regions-districts.json';
+import regionAndTc from '../../assets/geo_data/subdivision_names/regions-major-towns-cities.json';
 
 
 
@@ -11,6 +11,11 @@ export default function SearchBar(props) {
     const [searchPrice, setSearchPrice] = useState('');
     const [propertyType, setPropertyType] = useState('');
     const [numOfBedrooms, setNumOfBedrooms] = useState('');
+
+    const [whatToSearch, SetWhatToSearch] = useState('');
+    const [region, setRegion] = useState('');
+
+
     const [mustHave, setMustHave] = useState({
         garden: {
             include: false,
@@ -29,18 +34,16 @@ export default function SearchBar(props) {
             string: 'Retirement Home'
         },
     });
-    const [subdivisionType, setSubdivisionType] = useState('');
-    const [region, setRegion] = useState('');
-    console.log(region)
+   
+    const whatToSearchOptions = ['Top 20 UK cities', 'Major towns and cities within a region', 'London Boroughs']
+    // const subdivisionTypeChoices = ['Countries', 'Regions', 'Local Authority Districts within a Region'];
+    const regionNames = Object.keys(regionAndTc);
 
-    const subdivisionTypeChoices = ['Cities across regions', 'Districts of a region'];
-    const regionNames = Object.keys(regionAndDist);
+
 
     const handlePriceChange = ({target}) => {
-       
-        let formattedPrice = target.value;//.replace(/\B(?=(\d{3})+)/g, ',');
-        setSearchPrice(formattedPrice);
-      };
+        setSearchPrice(target.value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+    };
 
     const toggleInclude = (key) => {
         setMustHave(prev => (
@@ -60,23 +63,18 @@ export default function SearchBar(props) {
         toggleInclude(id)
     };
 
-    
-
     const handleSearchBy = () => {
         setSearchByPrice(prev => !prev);
     };
-
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         props.setIsLoading(true);
         // Remove string entries from mustHave obj
-        const mustHaveBools =Object.fromEntries(Object.keys(mustHave).map(key => {
+        const mustHaveBools = Object.fromEntries(Object.keys(mustHave).map(key => {
             const {include, ...rest} = mustHave[key];
             return [key, include];
         }));
- 
         let data = {
             searchType: searchByPrice? 'price': 'features',
             mustHave: mustHaveBools, 
@@ -87,14 +85,13 @@ export default function SearchBar(props) {
             data.numOfBedrooms = numOfBedrooms; 
             data.propertyType = propertyType;
         }
-
-        data['region'] = region;
-
+        
+        
+        data.whatToSearch = whatToSearch;
+        data['region'] = whatToSearch === 'London Boroughs'? 'London': region;
+         
         props.setPostData(data);
     };
-
-      
-
 
 
     const propertyTypes = ['Detached', 'Semi-detached', 'Terraced', 'Flat', 'Bungalow', 'Park-Home'];
@@ -111,113 +108,84 @@ export default function SearchBar(props) {
     return (
         <div className='search-container'>
 
-            <div className="search-type">
-                <h1>Price</h1>
-                <input className="checkbox" type="checkbox" id="reg-log" name="reg-log" onClick={handleSearchBy}/>
-                <label htmlFor="reg-log"></label>
-                <h1>Features</h1>
-            </div>
-
             <form onSubmit={handleSubmit}>
+                <div className="whatToSearch">
+                    <label htmlFor='whatToSearch' >Where to search</label>
+                    <select name='whatToSearch' onChange={({target}) => SetWhatToSearch(target.value)}>
+                        <option value="none" selected disabled hidden>Select an Option</option>
+                        {whatToSearchOptions.map(opt => <option value={opt}>{opt}</option>)}
+                    </select>
+                </div>
+
+                {whatToSearch === 'Major towns and cities within a region'
+                ? (                 
+                <div className="regionChoice">
+                <label htmlFor='regionChoice' >Region</label>
+                <select name='regionChoice' onChange={({target}) => setRegion(target.value)}>
+                    <option value="none" selected disabled hidden>Select a Region</option>
+                    {regionNames.map(opt => <option value={opt}>{opt}</option>)}
+                </select>
+                </div>)
+                : null
+                }
+
+                <div className="search-type">
+                    <p>Price</p>
+                    <input className="checkbox" type="checkbox" id="reg-log" name="reg-log" onClick={handleSearchBy}/>
+                    <label htmlFor="reg-log"></label>
+                    <p>Features</p>
+                </div>
 
                 {searchByPrice === true
-                ?  <div className='price-cont form-section col-1'>
+                ? <div className='price-cont form-section col-1'>
                     <label>Price:</label>
                     <input 
                         id='priceSearch'
                         className='search-bar'
                         type="text"
                         value={searchPrice}
-                        placeholder='Price'
+                        placeholder='£ XXX XXX'
                         onChange={handlePriceChange}
-                     
+                    
                     />
-                    </div>
-                
-                : <>
-                    <div className="col-1">
-                        <div className="property-type-cont form-section">
-                            <label htmlFor='property-type'>Property type:</label>
-                            <select name='property-type' onChange={({ target }) => setPropertyType(target.value)}>
-                                <option value="none" selected disabled hidden>Select an Option</option>
-                                {propertyTypes.map(type => (
-                                    <option value={type}>{type}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="beds-cont form-section col-1">
-                            <label htmlFor='number-beds' >Number of beds:</label>
-                            <select name='number-beds' onChange={({target}) => setNumOfBedrooms(target.value)}>
-                                <option value="none" selected disabled hidden>Select an Option</option>
-                                {bedFormOptions().map(opt => (
-
-                                    <option value={opt}>{opt}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                
-                </>
-                }
-
-                <div className="subdivisionType">
-                    <label htmlFor='subdivision' >Subdivision Type</label>
-                    <select name='subdivision' onChange={({target}) => setSubdivisionType(target.value)}>
-                  
-                    {subdivisionTypeChoices.map(opt => (
-
-                        <option value={opt}>{opt}</option>
-                    ))}
-                    </select>
                 </div>
-
-                {subdivisionType === 'Districts of a region'
-                ? (                 
-                <div className="regionChoice">
-                <label htmlFor='regionChoice' >Region</label>
-                <select name='regionChoice' onChange={({target}) => setRegion(target.value)}>
-              
-                {regionNames.map(opt => (
-
-                    <option value={opt}>{opt}</option>
-                ))}
-                </select>
-            </div>)
-            : null
+                : <div className="col-1">
+                    <div className="property-type-cont form-section">
+                        <label htmlFor='property-type'>Property type:</label>
+                        <select name='property-type' onChange={({ target }) => setPropertyType(target.value)}>
+                            <option value="none" selected disabled hidden>Select an Option</option>
+                            {propertyTypes.map(type => <option value={type}>{type}</option>)}
+                        </select>
+                    </div>
+                    <div className="beds-cont form-section col-1">
+                        <label htmlFor='number-beds' >Number of beds:</label>
+                        <select name='number-beds' onChange={({target}) => setNumOfBedrooms(target.value)}>
+                            <option value="none" selected disabled hidden>Select an Option</option>
+                            {bedFormOptions().map(opt => <option value={opt}>{opt}</option>)}
+                        </select>
+                    </div>
+                </div>
                 }
-
-
-
-
-
-
-
 
                 <div className="col-2">
                     <div className="multi-select include form-section">
-                            <label>Must have:</label>
-                            {Object.entries(mustHave).map(feature => {
-                                // console.log(feature[0]);
-                                return (
-                                    <button id={feature[0]} className={`${feature[0]} multi-select-label ${feature[1].include? 'active': ''}`} onClick={handleButtonClick}>{feature[1].string}</button>
-                                )
-                            })}
-                        </div>
-                        
-                        <div className="multi-select dont-include form-section">
-                            <label>Don't include:</label>
-                            {dontShow.map(feature => (
-                                <button className={`${feature} multi-select-label`}>{feature}</button>
-                            ))}
-                        </div>
+                        <label>Must have:</label>
+                        {Object.entries(mustHave).map(feature => (                            
+                            <button 
+                                id={feature[0]} 
+                                className={`${feature[0]} multi-select-label ${feature[1].include? 'active': ''}`} 
+                                onClick={handleButtonClick}
+                            >
+                                {feature[1].string}
+                            </button>
+                        ))}
+                    </div>      
+                   
                 </div>
-                
                 <div className="search-button-container form-section row-2">
                     <button className='submit-button' type='submit'>Search</button>
-                </div>
-            
+                </div> 
             </form>
         </div>
     );
-
 };

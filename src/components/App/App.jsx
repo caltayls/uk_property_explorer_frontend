@@ -9,42 +9,51 @@ import Table from '../Table/Table';
 import ClipLoader from "react-spinners/ClipLoader";
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
-import data from '../../assets/test_data/test_response.json';
+// import data from '../../assets/test_data/test_response.json';
 
 
 
 function App() {
 
   const [postData, setPostData] = useState('');
-  const [searchType, setSearchType] = useState(data.searchType)
-  const [mapData, setMapData] = useState(data.properties);
-  const [summaryData, setSummaryData] = useState(data.summaryTable);
+  const [searchType, setSearchType] = useState('');
+  const [mapData, setMapData] = useState('');
+  const [summaryData, setSummaryData] = useState('');
   const [region, setRegion] = useState('');
+  const [whatToSearch, setWhatToSearch] = useState('');
+  const [searchPrice, setSearchPrice] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log(`app region ${region}`);
   const fetchResponse = async () => {
     if (postData) {
+      console.log('wooooooooooooo');
+      setIsLoading(true);
       setRegion(postData.region);
-      // const response = await axios.post('http://localhost:8000/price_search/search/', postData)
-      //   .then(response => {
-      //     const data = response.data;
-      //     console.log(data);
-      //     setMapData(data.properties);
-      //     setSummaryData(data.summaryTable);
-          
-      //     setIsLoading(false);
-      //   })
-      }
-    };
+      setWhatToSearch(postData.whatToSearch);
+      setSearchType(postData.searchType);
+      await axios.post('http://localhost:8000/search/search/', postData)
+        .then(response => {
+          const data = response.data;
+          console.log(data);
+          setMapData(data.properties);
+          setSummaryData(data.summaryTable)
+        })
+        .catch(e => {
+          console.log(e);
+          setIsLoading(false);
+        });
+          setIsLoading(false);
+    }
+  };
   
 
   useEffect (() => {
     fetchResponse()
   }, [postData]);
 
-
+console.log(postData);
+console.log(searchType);
 
   return (
     <>
@@ -52,37 +61,25 @@ function App() {
       <div className="searchBar-container">
         <SearchBar setIsLoading={setIsLoading} setPostData={setPostData}/>
       </div>
-      <div className="map-table-container">
+      {mapData && (
+        <div className="map-table-container">
         <div className="summary-table-container">
-            <Table 
-              summaryData={summaryData}
-              // price={fakePrice}
-              searchType={searchType}
-            />
+          <Table 
+            summaryData={summaryData}
+            postData={postData}
+          />
         </div>
         <div className="map-container">
-          {
-            // (isLoading)
-            // ? (
-            //   <div className="loader-cont">
-            //       <ClipLoader 
-            //         className='loader' 
-            //         color="#6cbbf0" 
-            //         speedMultiplier='0.8'
-            //       />
-            //   </div>
-            // )
-            // : (
-                (<Map 
-                  className='map'
-                  mapData={mapData}
-                  region={region}
-              />
-            )
-          }
-          </div> 
-         
+          <Map 
+            className='map'
+            mapData={mapData}
+            region={region}
+            whatToSearch={whatToSearch}
+          />          
+        </div> 
       </div>
+      )}
+      
       
 
       

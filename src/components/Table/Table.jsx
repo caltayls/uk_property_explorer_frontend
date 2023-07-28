@@ -3,12 +3,17 @@ import './Table.css';
 
 
 export default function Table(props) {
-    const { summaryData , price, searchType } = props;
-    const [tableData, setTableData] = useState(summaryData);
+    const { summaryData , postData } = props;
+    const [tableData, setTableData] = useState('');
     const [sortOrder, setSortOrder] = useState('asc');
     
+    console.log(postData.searchType);
+
+    useEffect(() => {
+        setTableData(summaryData);
+    }, [summaryData]);
     let columnStrings;
-    if (searchType === 'price') {
+    if (postData.searchType === 'price') {
         columnStrings = {
         city: 'City',
         bedrooms: 'Bedrooms',
@@ -29,10 +34,7 @@ export default function Table(props) {
         }
     }
 
-
-
     const tableSort = (column) => {
-
         const sortedData = [...tableData].sort((a, b) => {
           if (a[column] < b[column]) {
             return sortOrder === 'asc' ? -1 : 1;
@@ -42,7 +44,6 @@ export default function Table(props) {
           }
           return 0;
         });
-    
         setTableData(sortedData);
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
       };
@@ -53,13 +54,16 @@ export default function Table(props) {
       };
  
  
-
     return (
         <>
         <div className="table-context">
-            <h1>What £{price} is most likely to buy in each city</h1>
-        </div>
-        
+            {
+                postData.searchType==='price'
+                ? <h1>What £{Number(postData.price).toLocaleString()} is most likely to buy in each area</h1>
+                : <h1>Summary Statistics for a {postData.numOfBedrooms} bed {postData.propertyType}</h1> 
+            } 
+            <p>Statistics are based on 100 most recently added properties to Rightmove that match search criteria.</p>
+        </div>   
         <table className="summary-table">
             <thead className="summary-header">
                 <tr>
@@ -75,26 +79,19 @@ export default function Table(props) {
             </thead>
             <tbody className="summary-body">
                 
-                {tableData.map(row => (
+                {tableData && tableData.map(row => (
                     <tr key={row.city}>
                         {Object.entries(row).map(entry => {
-                            {if (searchType === 'features') {
+                            {if (postData.searchType === 'features') {
                                 return <td className={entry[0]}>{entry[1].toLocaleString()}</td> 
                          } else {
                             return <td className={entry[0]}>{entry[1]}</td>
                             }}
                         })}
-                    </tr>
-
-                       
-                        ))}
-                    
-                
+                    </tr>                     
+                        ))}         
             </tbody>
         </table>
         </>
     )
-
-
-
 };
