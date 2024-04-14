@@ -12,7 +12,6 @@ export default function MapPolygons(props) {
     const tcsInThisRegion = tcInRegionsNames[props.region];
     const ldnBrghNames = ladInRegionNames['London'];
     const regionPoly = regionPolys['features'].find(r => r.properties.RGN22NM === props.region);
-    console.log(props.region);
 
     let polysToMap;
     if (props.whatToSearch === 'London Boroughs') {

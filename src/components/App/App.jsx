@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 // import jsonData from '../../assets/react_test_data.json';
 // import featureSearch from '../../assets/feature_search.json';
 // import jsonSummary from '../../assets/top_vals.json';
@@ -14,28 +14,34 @@ import axios from 'axios';
 
 
 function App() {
-
-  const [postData, setPostData] = useState('');
+  // state used for loading data from backend
+  const [getParams, setGetParams] = useState('');
   const [searchType, setSearchType] = useState('');
   const [mapData, setMapData] = useState('');
   const [summaryData, setSummaryData] = useState('');
   const [region, setRegion] = useState('');
   const [whatToSearch, setWhatToSearch] = useState('');
-  const [searchPrice, setSearchPrice] = useState('');
-
   const [isLoading, setIsLoading] = useState(false);
+  // state for table values to colour map
+  const heatMap = {};
+  if (summaryData) {
+    const meanValueArray = summaryData.map((rec) => Number(rec.mean));
+    const tableLength = meanValueArray.length;
+    const maxValue = Math.max(...meanValueArray);
+    const minValue = Math.min(...meanValueArray);
+    heatMap.tableLength = tableLength;
+    heatMap.maxValue = maxValue;
+    heatMap.minValue = minValue;
+  }
+  
+
 
   const fetchResponse = async () => {
-    if (postData) {
-      console.log('wooooooooooooo');
-      setIsLoading(true);
-      setRegion(postData.region);
-      setWhatToSearch(postData.whatToSearch);
-      setSearchType(postData.searchType);
-      await axios.post('http://localhost:8000/search/search/', postData)
+    if (getParams) {
+      console.log(getParams);
+      await axios.post('http://localhost:8000/', { params: getParams })
         .then(response => {
           const data = response.data;
-          console.log(data);
           setMapData(data.properties);
           setSummaryData(data.summaryTable)
         })
@@ -43,30 +49,29 @@ function App() {
           console.log(e);
           setIsLoading(false);
         });
-          setIsLoading(false);
+      setIsLoading(false);
     }
   };
   
-
   useEffect (() => {
     fetchResponse()
-  }, [postData]);
+  }, [getParams]);
 
-console.log(postData);
-console.log(searchType);
+
+
 
   return (
     <>
 
       <div className="searchBar-container">
-        <SearchBar setIsLoading={setIsLoading} setPostData={setPostData}/>
+        <SearchBar setIsLoading={setIsLoading} setGetParams={setGetParams}/>
       </div>
       {mapData && (
         <div className="map-table-container">
         <div className="summary-table-container">
           <Table 
             summaryData={summaryData}
-            postData={postData}
+            getParams={getParams}
           />
         </div>
         <div className="map-container">

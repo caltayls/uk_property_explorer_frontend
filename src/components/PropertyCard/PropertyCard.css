@@ -6,9 +6,9 @@
 .property-card {
 
     display: grid;
-    width: 25vw;
+    width: 23vw;
     /* min-height: 300px; */
-    max-height: 500px;
+    max-height: 700px;
     
     /* grid-template-columns: 2fr 3fr; */
     grid-template-rows: 2fr minmax(400px 600px);
@@ -27,7 +27,7 @@
     grid-column: 1;
     width:90%;
     min-height: 300px;
-    max-height: 500px;
+    max-height: 350px;
 
    
 
@@ -50,6 +50,6 @@
 }
 
 h1, h3 {
-    margin-right: 15px;
+    margin-right: 40px;
     font-weight:300;
 } 

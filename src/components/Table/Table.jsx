@@ -8,22 +8,29 @@ export default function Table(props) {
     const [sortOrder, setSortOrder] = useState('asc');
     
     console.log(postData.searchType);
+    
+    // necessary so that table can be sorted
+    useEffect (() => {
+        setTableData(summaryData)
+    }, [summaryData])
 
-    useEffect(() => {
-        setTableData(summaryData);
-    }, [summaryData]);
+
+
     let columnStrings;
     if (postData.searchType === 'price') {
+        
         columnStrings = {
-        city: 'City',
-        bedrooms: 'Bedrooms',
-        bathrooms: 'Bathrooms',
-        propertySubType: 'Property Type',
-        listingUpdateReason: 'Reason for listing'
-        }
+            city: '',
+            bedrooms: 'Bedrooms',
+            bathrooms: 'Bathrooms',
+            propertySubType: 'Property Type',
+            listingUpdateReason: 'Reason for listing'
+        };
+
+
     } else {
         columnStrings = {
-            city: 'City',
+            city: '',
             mean: 'Mean',
             std: 'Standard Deviation',
             min: 'Minimum',
@@ -31,8 +38,14 @@ export default function Table(props) {
             '50%': '50%',
             '75%': '75%',
             max: 'Maximum',
-        }
+        };
+
+  
+ 
     }
+
+
+ 
 
     const tableSort = (column) => {
         const sortedData = [...tableData].sort((a, b) => {
@@ -60,7 +73,7 @@ export default function Table(props) {
             {
                 postData.searchType==='price'
                 ? <h1>What £{Number(postData.price).toLocaleString()} is most likely to buy in each area</h1>
-                : <h1>Summary Statistics for a {postData.numOfBedrooms} bed {postData.propertyType}</h1> 
+                : <h1>Summary Statistics for a {postData.numOfBedrooms} Bed {postData.propertyType}</h1> 
             } 
             <p>Statistics are based on 100 most recently added properties to Rightmove that match search criteria.</p>
         </div>   

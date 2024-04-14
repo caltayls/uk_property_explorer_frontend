@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap} from 'react-leaflet';
 import MarkerClusterGroup from "react-leaflet-cluster";
 import PropertyCard from '../PropertyCard/PropertyCard';
@@ -15,9 +15,11 @@ function Fly ({ coords }) {
     }, [coords]);
 };
 
+
+
 export default function Map(props) {
 
-    const { mapData, region, whatToSearch } = props;
+    const { mapData, region, whatToSearch, meanMinMax } = props;
     const [zoom, setZoom] = useState(6);
     const [hideMapIcons, setHideMapIcons] = useState(false);
     
@@ -68,7 +70,6 @@ export default function Map(props) {
         setHideMapIcons(prev => !prev);
     };
 
-  
     return (
         <>
         <div className="hide-icons-container">
@@ -77,19 +78,15 @@ export default function Map(props) {
             <label htmlFor="hide-icons"></label>
         </div>
         <MapContainer className='property-map' center={[55,0]} zoom={zoom}>
-           {region && <Fly coords={coords}/>}
+            {region && <Fly coords={coords}/>}
             <TileLayer
-        attribution={
-            '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          }
-          url={'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png'}
+                attribution={'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}
+                url={'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png'}
             />
-                <MarkerClusterGroup
-                    maxClusterRadius={20}
-                >
-                    {!hideMapIcons && mapData && recordsForMap.map(record => {
-                        const { location } = record;
-                        return (
+            <MarkerClusterGroup maxClusterRadius={20}>
+                {!hideMapIcons && mapData && recordsForMap.map(record => {
+                    const { location } = record;
+                    return (
                         <Marker position={[location.latitude, location.longitude]}>
                             <Popup 
                                 className='property-popup' 
@@ -98,11 +95,12 @@ export default function Map(props) {
                                 <PropertyCard propertyRecord={record}/>
                             </Popup>
                         </Marker>
-                        )
-                    })}
-                </MarkerClusterGroup>
-                <MapPolygons region={region} whatToSearch={whatToSearch}/>
-            </MapContainer>
+                    )
+                })}
+            </MarkerClusterGroup>
+        
+            <MapPolygons region={region} whatToSearch={whatToSearch} meanMinMax={meanMinMax}/>
+        </MapContainer>
         </>
     );
 };

@@ -35,7 +35,7 @@ export default function SearchBar(props) {
         },
     });
    
-    const whatToSearchOptions = ['Top 20 UK cities', 'Major towns and cities within a region', 'London Boroughs']
+    const whatToSearchOptions = ['Major towns and cities within a region', 'London Boroughs']
     // const subdivisionTypeChoices = ['Countries', 'Regions', 'Local Authority Districts within a Region'];
     const regionNames = Object.keys(regionAndTc);
 
@@ -90,7 +90,7 @@ export default function SearchBar(props) {
         data.whatToSearch = whatToSearch;
         data['region'] = whatToSearch === 'London Boroughs'? 'London': region;
          
-        props.setPostData(data);
+        props.setGetParams(data);
     };
 
 
@@ -130,11 +130,15 @@ export default function SearchBar(props) {
                 }
 
                 <div className="search-type">
-                    <p>Price</p>
-                    <input className="checkbox" type="checkbox" id="reg-log" name="reg-log" onClick={handleSearchBy}/>
-                    <label htmlFor="reg-log"></label>
-                    <p>Features</p>
+                    <span className='search-type-choice price'>Price</span>
+                    
+                    <label className='toggle'>
+                        <input className="checkbox" type="checkbox" id="reg-log" name="reg-log" onClick={handleSearchBy}/>
+                        <span className='slider'></span>
+                    </label>
+                    <span className='search-type-choice features'>Features</span>
                 </div>
+                
 
                 {searchByPrice === true
                 ? <div className='price-cont form-section col-1'>
@@ -146,6 +150,7 @@ export default function SearchBar(props) {
                         value={searchPrice}
                         placeholder='£ XXX XXX'
                         onChange={handlePriceChange}
+                        autoComplete="off"
                     
                     />
                 </div>

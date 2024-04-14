@@ -4,7 +4,7 @@
    */
   max-height: 500px;
   background-color: #ececec!important;
-  border-radius: 10px;
+  border-radius: 0 0 10px 10px;
   width: 99%;
   margin: 0 auto;
 }
@@ -27,19 +27,17 @@
   height: 70vh;
   overflow: auto;
   width: 60%;
-
-
-}
+ }
 
 .summary-table-container {
-  width: 35%;
+  width: 40%;
   height: 70vh;
   overflow: auto;
   background-color: #ececec!important;
   z-index: 1;
   margin: 20px 0 20px 0;
-  padding: 0 30px 0 30px;
-  border-radius: 10px;
+  padding: 0 10px 0 10px;
+  border-radius: 10px 0 0 10px;
   /* border: 1px solid black; */
 
 }

@@ -19,7 +19,7 @@ export default function PropertyCard(props) {
                     </div>
                     
                     <div className="price">
-                        <h1>£{price.amount}</h1> 
+                        <h1>£{price.amount.toLocaleString()}</h1> 
                     </div>
                     
                     <div className="info">

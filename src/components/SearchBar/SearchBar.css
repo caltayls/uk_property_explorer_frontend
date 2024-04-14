@@ -60,24 +60,53 @@ form {
     border-radius: 4px;
   }
   
-  /* Style checkboxes */
-  .checkbox {
-    display: none;
-  }
-  
-  .checkbox + label {
+  .toggle {
+    position: relative;
     display: inline-block;
     width: 30px;
-    height: 30px;
-    background-color: #ccc;
-    border-radius: 4px;
+    height: 15px;
+    
+}
+ 
+/* Hide the checkbox input */
+.toggle input {
+    display: none;
+}
+ 
+/* Describe slider's look and position. */
+.slider {
+    position: absolute;
     cursor: pointer;
-    margin-right: 5px;
-  }
-  
-  .checkbox:checked + label {
-    background-color: #007bff; /* Change the color to your preference */
-  }
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: gray;
+    transition: .4s;
+    border-radius: 34px;
+}
+ 
+/* Describe the white ball's location 
+      and appearance in the slider. */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 15px;
+    width: 15px;
+    left: 0px;
+    bottom: 0px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+ 
+
+ 
+/* When the checkbox is checked, shift the 
+      white ball towards the right within the slider. */
+input:checked+.slider:before {
+    transform: translateX(15px);
+}
   
   /* Style buttons */
   .submit-button {
@@ -123,7 +152,15 @@ form {
     margin-left: 10px;
   }
   
-  .search-type p {
-    margin-right: 10px;
+  .search-type-choice {
+    padding: 10px;
+    margin-bottom: 6px;
+    font-weight: bold;
   }
+
+  .search-type-choice.price {
+    padding-left: 0;
+    font-weight: bold;
+  }
+
   
